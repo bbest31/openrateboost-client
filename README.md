@@ -31,7 +31,7 @@ yarn start
 ```
 NODE_ENV=
 
-PORT=3030
+PORT=3000
 
 # HOST
 REACT_APP_HOST_API_KEY=https://minimal-assets-api-dev.vercel.app
@@ -51,6 +51,9 @@ REACT_APP_AUTH0_SCOPE=read:current_user openid profile email read:current_user_m
 
 # MIXPANEL
 REACT_APP_MIXPANEL_TOKEN=
+
+#STRIPE
+REACT_APP_STRIPE_PORTAL_URL=
 ```
 
 ```sh
