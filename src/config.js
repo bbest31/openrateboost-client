@@ -25,6 +25,7 @@ export const AUTH0_API = {
 
 export const MIXPANEL_API = {
   debug: process.env.NODE_ENV !== 'production',
+  proxy: process.env.REACT_APP_MIXPANEL_PROXY,
 };
 
 export const MAX_FREE_USES = process.env.NODE_ENV === 'production' ? 10 : 1000;

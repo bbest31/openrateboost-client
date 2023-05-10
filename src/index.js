@@ -22,7 +22,7 @@ import App from './App';
 // ----------------------------------------------------------------------
 
 ReactDOM.render(
-  <MixpanelProvider config={{ debug: MIXPANEL_API.debug }}>
+  <MixpanelProvider config={{ debug: MIXPANEL_API.debug, api_host: MIXPANEL_API.proxy, track_pageview: true }}>
     <Auth0Provider
       domain={AUTH0_API.domain}
       clientId={AUTH0_API.clientId}
