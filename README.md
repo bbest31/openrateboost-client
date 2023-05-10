@@ -16,12 +16,10 @@ npm i --legacy-peer-deps
 yarn install
 ```
 
-## 2.Start
+## 2. Run in development mode
 
 ```sh
-npm start
-or
-yarn start
+npm run start:dev
 ```
 
 ## 3.Build
