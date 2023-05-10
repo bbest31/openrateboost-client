@@ -49,6 +49,7 @@ REACT_APP_AUTH0_SCOPE=read:current_user openid profile email read:current_user_m
 
 # MIXPANEL
 REACT_APP_MIXPANEL_TOKEN=
+REACT_APP_MIXPANEL_PROXY=
 
 #STRIPE
 REACT_APP_STRIPE_PORTAL_URL=
