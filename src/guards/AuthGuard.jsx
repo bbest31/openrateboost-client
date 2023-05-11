@@ -78,15 +78,14 @@ export default function AuthGuard({ children }) {
     setRequestedLocation(null);
     return <Navigate to={requestedLocation} />;
   }
-
+  mixpanel.identify(user.sub);
+  mixpanel.people.set({
+    $email: user.email,
+    $name: user.name,
+    $avatar: user.picture,
+    $distinct_id: user.sub,
+  });
   if (searchParams.get('login') === 'true') {
-    mixpanel.identify(user.sub);
-    mixpanel.people.set({
-      $email: user.email,
-      $name: user.name,
-      $avatar: user.picture,
-      $distinct_id: user.sub,
-    });
     trackEvent(mixpanel, 'Login', { source: 'webapp' });
   }
   return <>{children}</>;
