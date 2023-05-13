@@ -38,6 +38,14 @@ export default function Router() {
       children: [{ path: '', element: <Pricing /> }],
     },
     {
+      path: '/privacy-policy',
+      children: [{ path: '', element: <PrivacyPolicy /> }],
+    },
+    {
+      path: '/terms-and-conditions',
+      children: [{ path: '', element: <TermsAndConditions /> }],
+    },
+    {
       path: PATH_DASHBOARD.root,
       element: (
         <AuthGuard>
@@ -75,6 +83,8 @@ const Home = Loadable(lazy(() => import('../pages/Home')));
 const AccountSettings = Loadable(lazy(() => import('../pages/AccountSettings')));
 const Help = Loadable(lazy(() => import('../pages/Help')));
 const Pricing = Loadable(lazy(() => import('../pages/Pricing')));
+const PrivacyPolicy = Loadable(lazy(() => import('../pages/PrivacyPolicy')));
+const TermsAndConditions = Loadable(lazy(() => import('../pages/TermsAndConditions')));
 const NotFound = Loadable(lazy(() => import('../pages/Page404')));
 
 // Auth
