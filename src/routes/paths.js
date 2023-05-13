@@ -18,6 +18,8 @@ export const PATH_PAGE = {
   comingSoon: '/coming-soon',
   maintenance: '/maintenance',
   pricing: '/pricing',
+  privacy: '/privacy-policy',
+  terms: '/terms-and-conditions',
   payment: '/payment',
   about: '/about-us',
   contact: '/contact-us',
