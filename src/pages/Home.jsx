@@ -11,9 +11,12 @@ import {
   Paper,
   TableFooter,
   TablePagination,
+  TableSortLabel,
+  Box,
 } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 // hooks
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import useSettings from '../hooks/useSettings';
 // components
@@ -39,14 +42,26 @@ export default function Home() {
   const [userPlan, setUserPlan] = useState('free');
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
-  const [order] = useState(DEFAULT_ORDER);
+  const [order, setOrder] = useState(DEFAULT_ORDER);
+  const [orderBy, setOrderBy] = useState(DEFAULT_ORDER_BY);
 
-  // a comparator function for sorting based on the createdAt Date field
-  const compareDateFn = (a, b) => {
-    if (order === DEFAULT_ORDER) {
-      return new Date(b[DEFAULT_ORDER_BY]) - new Date(a[DEFAULT_ORDER_BY]);
+  const descendingComparator = (a, b, orderBy) => {
+    if (orderBy === 'createdAt') {
+      return new Date(b[orderBy]) - new Date(a[orderBy]);
     }
-    return new Date(a[DEFAULT_ORDER_BY]) - new Date(b[DEFAULT_ORDER_BY]);
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
+  };
+
+  const createSortHandler = (field) => {
+    const isAsc = orderBy === field && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(field);
   };
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -70,7 +85,6 @@ export default function Home() {
 
           const subjectLinesJson = await res.json();
           const rows = [...subjectLines, ...subjectLinesJson];
-          rows.sort(compareDateFn);
           setSubjectLines(rows);
         } catch (e) {
           console.error(e.message);
@@ -127,6 +141,14 @@ export default function Home() {
     getSubjectLines();
   }, [getSubjectLines, getUserPlan]);
 
+  const visibleRows = useMemo(() => {
+    const getComparator = (order, orderBy) =>
+      order === DEFAULT_ORDER
+        ? (a, b) => descendingComparator(a, b, orderBy)
+        : (a, b) => -descendingComparator(a, b, orderBy);
+    return subjectLines.slice(page * limit, page * limit + limit).sort(getComparator(order, orderBy));
+  }, [limit, orderBy, order, page, subjectLines]);
+
   return (
     <Page title="Home">
       <Container maxWidth={themeStretch ? false : 'xl'}>
@@ -138,14 +160,66 @@ export default function Home() {
             <TableHead>
               <TableRow>
                 <TableCell>Subject Line</TableCell>
-                <TableCell align="right">Open Rate</TableCell>
-                <TableCell align="right">Unique Opens</TableCell>
-                <TableCell align="right">Total Opens</TableCell>
-                <TableCell align="right">Date Generated</TableCell>
+                <TableCell align="right" sortDirection={orderBy === 'openRate' ? order : 'asc'}>
+                  <TableSortLabel
+                    active={orderBy === 'openRate'}
+                    direction={orderBy === 'openRate' ? order : 'asc'}
+                    onClick={() => createSortHandler('openRate')}
+                  >
+                    Open Rate
+                    {orderBy === 'openRate' ? (
+                      <Box component="span" sx={visuallyHidden}>
+                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                      </Box>
+                    ) : null}
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align="right" sortDirection={orderBy === 'uniqueOpens' ? order : 'asc'}>
+                  <TableSortLabel
+                    active={orderBy === 'uniqueOpens'}
+                    direction={orderBy === 'uniqueOpens' ? order : 'asc'}
+                    onClick={() => createSortHandler('uniqueOpens')}
+                  >
+                    Unique Opens
+                    {orderBy === 'uniqueOpens' ? (
+                      <Box component="span" sx={visuallyHidden}>
+                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                      </Box>
+                    ) : null}
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align="right" sortDirection={orderBy === 'opens' ? order : 'asc'}>
+                  <TableSortLabel
+                    active={orderBy === 'opens'}
+                    direction={orderBy === 'opens' ? order : 'asc'}
+                    onClick={() => createSortHandler('opens')}
+                  >
+                    Total Opens
+                    {orderBy === 'opens' ? (
+                      <Box component="span" sx={visuallyHidden}>
+                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                      </Box>
+                    ) : null}
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align="right" sortDirection={orderBy === 'createdAt' ? order : 'asc'}>
+                  <TableSortLabel
+                    active={orderBy === 'createdAt'}
+                    direction={orderBy === 'createdAt' ? order : 'asc'}
+                    onClick={() => createSortHandler('createdAt')}
+                  >
+                    Date Generated
+                    {orderBy === 'createdAt' ? (
+                      <Box component="span" sx={visuallyHidden}>
+                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                      </Box>
+                    ) : null}
+                  </TableSortLabel>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {subjectLines.slice(page * limit, page * limit + limit).map((row, index) => (
+              {visibleRows.map((row, index) => (
                 <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell component="th" scope="row">
                     {row.text}
