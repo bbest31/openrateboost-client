@@ -13,22 +13,64 @@ import {
   Box,
   Stack,
   Button,
+  CircularProgress,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 // hooks
+import { useAuth0 } from '@auth0/auth0-react';
 import useSettings from '../hooks/useSettings';
 // components
 import Page from '../components/Page';
+// config
+import { AUTH0_API, SERVER_API } from '../config';
 
 // ----------------------------------------------------------------------
 
 export default function Help() {
   const { themeStretch } = useSettings();
+  const { enqueueSnackbar } = useSnackbar();
+  const { getAccessTokenSilently, user } = useAuth0();
   const [message, setMessage] = useState('');
   const [category, setCategory] = useState('');
+  const [isSending, setIsSending] = useState(false);
   const supportEmail = 'thebrandonmbest@gmail.com';
+  const { audience, scope } = AUTH0_API;
 
-  const openEmailClient = () => {
-    window.open(`mailto:${supportEmail}?subject=OpenRateBoost%20${category}&body=${encodeURIComponent(message)}`);
+  const submitSupportRequest = async () => {
+    setIsSending(true);
+    try {
+      const accessToken = await getAccessTokenSilently({
+        authorizationParams: {
+          audience,
+          scope,
+        },
+      });
+      fetch(`${SERVER_API}/users/${user.sub}/support`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ subject: `OpenRateBoost Support: ${category}`, text: message }),
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            enqueueSnackbar('Support message sent!');
+            setMessage('');
+            setCategory('');
+          } else {
+            enqueueSnackbar('Something went wrong', { variant: 'error' });
+          }
+          setIsSending(false);
+        })
+        .catch((err) => {
+          setIsSending(false);
+          enqueueSnackbar('Something went wrong', { variant: 'error' });
+          throw err;
+        });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -79,9 +121,20 @@ export default function Help() {
                     />
                   </FormControl>
                   <Stack spacing={3} alignItems="flex-end">
-                    <Button variant="contained" size="large" onClick={openEmailClient}>
-                      Submit
-                    </Button>
+                    {isSending ? (
+                      <Box sx={{ display: 'flex' }}>
+                        <CircularProgress />
+                      </Box>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        size="large"
+                        disabled={message.trim() === '' || category.trim() === ''}
+                        onClick={submitSupportRequest}
+                      >
+                        Submit
+                      </Button>
+                    )}
                   </Stack>
                 </Box>
               </Card>
