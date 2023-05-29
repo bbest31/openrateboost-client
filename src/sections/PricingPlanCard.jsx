@@ -52,7 +52,7 @@ export default function PricingPlanCard({ card, index, click }) {
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', my: 2 }}>
         {index === 1 || index === 2 ? (
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-            $
+            USD $
           </Typography>
         ) : (
           ''
