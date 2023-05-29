@@ -29,7 +29,7 @@ export default function ContactForm({ feedback }) {
       return;
     }
 
-    fetch(`${SERVER_API}/support`, {
+    fetch(`${SERVER_API}/contact`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

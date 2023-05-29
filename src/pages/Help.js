@@ -81,8 +81,6 @@ export default function Help() {
         </Typography>
         <Typography gutterBottom>
           If you are having any issues, or would like to give us feedback, please contact us using the form below.
-          <br />
-          Or email us at <strong>{supportEmail}</strong>
         </Typography>
 
         <Grid container spacing={3}>
