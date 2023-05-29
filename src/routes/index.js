@@ -5,6 +5,7 @@ import { PATH_DASHBOARD } from './paths';
 // layouts
 import DashboardLayout from '../layouts/dashboard';
 import LogoOnlyLayout from '../layouts/LogoOnlyLayout';
+import MainLayout from '../layouts/main';
 // components
 import LoadingScreen from '../components/LoadingScreen';
 import Redirect from '../components/Redirect';
@@ -27,7 +28,8 @@ export default function Router() {
   return useRoutes([
     {
       path: '/',
-      element: <Navigate to={PATH_DASHBOARD.root} replace />,
+      element: <MainLayout />,
+      children: [{ element: <LandingPage />, index: true }, {path:'contact-us',element: <ContactUs/>}],
     },
     {
       path: '/auth',
@@ -77,6 +79,9 @@ export default function Router() {
     { path: '*', element: <Navigate to="/404" replace /> },
   ]);
 }
+
+const LandingPage = Loadable(lazy(() => import('../pages/LandingPage')));
+const ContactUs = Loadable(lazy(() => import('../pages/ContactUs')));
 
 // Dashboard
 const Home = Loadable(lazy(() => import('../pages/Home')));
