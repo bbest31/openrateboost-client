@@ -11,7 +11,7 @@ import Page from '../components/Page';
 // sections
 import PricingPlanCard from '../sections/PricingPlanCard';
 // config
-import { AUTH0_API, STRIPE_CONFIG } from '../config';
+import { AUTH0_API, STRIPE_CONFIG, SERVER_API } from '../config';
 // assets
 import { PlanFreeIcon, PlanStarterIcon, PlanPremiumIcon } from '../assets';
 import { PATH_AUTH } from '../routes/paths';
@@ -85,19 +85,45 @@ export default function Pricing() {
   const [userPlan, setUserPlan] = useState(null);
   const navigate = useNavigate();
 
-  const planOnClick = (plan) => {
+/**
+ * 
+ * @param {*} plan 
+ * @returns {String}
+ */
+  const createCheckoutSession = async (plan) => {
+    const accessToken = await getAccessTokenSilently({
+      audience,
+      scope,
+    });
+    const createCheckoutSessionUrl = `${SERVER_API}/users/${user.sub}/checkout?plan=${plan}`;
+    const response = await fetch(createCheckoutSessionUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await response.json();
+    if (data?.error) {
+      return '#';
+    }
+
+    return data.url;
+  };
+
+  const planOnClick = async (plan) => {
     const billingPortalUrl = `${STRIPE_CONFIG.portalUrl}?prefilled_email=${encodeURIComponent(user.email)}`;
     switch (plan) {
       case 'basic':
         window.location.href =
           userPlan === 'free'
-            ? `${STRIPE_CONFIG.basicCheckout}?prefilled_email=${encodeURIComponent(user.email)}`
+            ? await createCheckoutSession('basic')
             : billingPortalUrl;
         break;
       case 'premium':
         window.location.href =
           userPlan === 'free'
-            ? `${STRIPE_CONFIG.premiumCheckout}?prefilled_email=${encodeURIComponent(user.email)}`
+            ? await createCheckoutSession('premium')
             : billingPortalUrl;
         break;
       default:
