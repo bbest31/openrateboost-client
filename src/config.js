@@ -11,8 +11,6 @@ export const HOST_API = process.env.REACT_APP_HOST_API_KEY || '';
 
 export const SERVER_API = process.env.REACT_APP_API_SERVER || '';
 
-export const STRIPE_PORTAL_URL = process.env.REACT_APP_STRIPE_PORTAL_URL || '';
-
 export const EXT_WEBPAGE = process.env.REACT_APP_EXT_WEBPAGE || '';
 
 export const AUTH0_API = {
@@ -21,6 +19,12 @@ export const AUTH0_API = {
   redirectURI: `${window.location.origin}${PATH_AFTER_LOGIN}`,
   audience: process.env.REACT_APP_AUTH0_AUDIENCE,
   scope: process.env.REACT_APP_AUTH0_SCOPE,
+};
+
+export const STRIPE_CONFIG = {
+  portalUrl: process.env.REACT_APP_STRIPE_PORTAL_URL || '',
+  basicCheckout: process.env.REACT_APP_BASIC_CHECKOUT_LINK || '',
+  premiumCheckout: process.env.REACT_APP_PREMIUM_CHECKOUT_LINK || '',
 };
 
 export const MIXPANEL_API = {
