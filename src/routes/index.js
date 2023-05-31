@@ -9,7 +9,7 @@ import MainLayout from '../layouts/main';
 // components
 import LoadingScreen from '../components/LoadingScreen';
 import Redirect from '../components/Redirect';
-import { STRIPE_PORTAL_URL } from '../config';
+import { STRIPE_CONFIG } from '../config';
 
 // ----------------------------------------------------------------------
 
@@ -63,7 +63,7 @@ export default function Router() {
           children: [
             { element: <Navigate to={PATH_DASHBOARD.general.account.settings} replace />, index: true },
             { path: 'settings', element: <AccountSettings /> },
-            { path: 'billing', element: <Redirect url={STRIPE_PORTAL_URL} /> },
+            { path: 'billing', element: <Redirect url={STRIPE_CONFIG.portalUrl} /> },
           ],
         },
       ],

@@ -1,6 +1,6 @@
 // components
 import SvgIconStyle from '../../../components/SvgIconStyle';
-import { STRIPE_PORTAL_URL, EXT_WEBPAGE } from '../../../config';
+import { STRIPE_CONFIG, EXT_WEBPAGE } from '../../../config';
 
 // ----------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ const navConfig = [
         icon: ICONS.account,
         children: [
           { title: 'Settings', path: '/dashboard/account/settings' },
-          { title: 'Billing', path: STRIPE_PORTAL_URL },
+          { title: 'Billing', path: STRIPE_CONFIG.portalUrl },
         ],
       },
       { title: 'Install Extension', path: EXT_WEBPAGE, icon: ICONS.launch },

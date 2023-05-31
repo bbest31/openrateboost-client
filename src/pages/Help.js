@@ -33,7 +33,6 @@ export default function Help() {
   const [message, setMessage] = useState('');
   const [category, setCategory] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const supportEmail = 'thebrandonmbest@gmail.com';
   const { audience, scope } = AUTH0_API;
 
   const submitSupportRequest = async () => {

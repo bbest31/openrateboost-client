@@ -11,7 +11,7 @@ import Page from '../components/Page';
 // sections
 import PricingPlanCard from '../sections/PricingPlanCard';
 // config
-import { AUTH0_API, STRIPE_PORTAL_URL } from '../config';
+import { AUTH0_API, STRIPE_CONFIG } from '../config';
 // assets
 import { PlanFreeIcon, PlanStarterIcon, PlanPremiumIcon } from '../assets';
 import { PATH_AUTH } from '../routes/paths';
@@ -82,8 +82,33 @@ export default function Pricing() {
   const { getAccessTokenSilently, user, isAuthenticated } = useAuth0();
   const { domain, audience, scope } = AUTH0_API;
   const [pricingPlans, setPricingPlans] = useState(_pricingPlans);
+  const [userPlan, setUserPlan] = useState(null);
   const navigate = useNavigate();
-  const [onClick, setOnClick] = useState(() => () => navigate(PATH_AUTH.login));
+
+  const planOnClick = (plan) => {
+    const billingPortalUrl = `${STRIPE_CONFIG.portalUrl}?prefilled_email=${encodeURIComponent(user.email)}`;
+    if (isAuthenticated) {
+      switch (plan) {
+        case 'basic':
+          window.location.href =
+            userPlan === 'free'
+              ? `${STRIPE_CONFIG.basicCheckout}?prefilled_email=${encodeURIComponent(user.email)}`
+              : billingPortalUrl;
+          break;
+        case 'premium':
+          window.location.href =
+            userPlan === 'free'
+              ? `${STRIPE_CONFIG.premiumCheckout}?prefilled_email=${encodeURIComponent(user.email)}`
+              : billingPortalUrl;
+          break;
+        default:
+          window.location.href = billingPortalUrl;
+          break;
+      }
+    } else {
+      navigate(PATH_AUTH.login);
+    }
+  };
 
   const updatePricingPlans = useCallback((index) => {
     const newPlans = pricingPlans.map((plan, i) => {
@@ -99,9 +124,6 @@ export default function Pricing() {
   useEffect(() => {
     (async () => {
       if (isAuthenticated) {
-        setOnClick(() => () => {
-          window.location.href = `${STRIPE_PORTAL_URL}?prefilled_email=${encodeURIComponent(user.email)}`;
-        });
         try {
           const accessToken = await getAccessTokenSilently({
             authorizationParams: {
@@ -124,11 +146,14 @@ export default function Pricing() {
           switch (user_metadata?.plan || 'free') {
             case 'basic':
               updatePricingPlans(1);
+              setUserPlan('basic');
               break;
             case 'premium':
+              setUserPlan('premium');
               updatePricingPlans(2);
               break;
             default:
+              setUserPlan('free');
               updatePricingPlans(0);
               break;
           }
@@ -173,7 +198,13 @@ export default function Pricing() {
           <Grid container spacing={3} sx={{ my: 5 }}>
             {pricingPlans.map((card, index) => (
               <Grid item xs={12} md={4} key={card.subscription}>
-                <PricingPlanCard card={card} index={index} click={onClick} />
+                <PricingPlanCard
+                  card={card}
+                  index={index}
+                  click={() => {
+                    planOnClick(card.subscription);
+                  }}
+                />
               </Grid>
             ))}
           </Grid>
