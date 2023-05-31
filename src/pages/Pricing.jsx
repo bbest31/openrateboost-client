@@ -87,26 +87,22 @@ export default function Pricing() {
 
   const planOnClick = (plan) => {
     const billingPortalUrl = `${STRIPE_CONFIG.portalUrl}?prefilled_email=${encodeURIComponent(user.email)}`;
-    if (isAuthenticated) {
-      switch (plan) {
-        case 'basic':
-          window.location.href =
-            userPlan === 'free'
-              ? `${STRIPE_CONFIG.basicCheckout}?prefilled_email=${encodeURIComponent(user.email)}`
-              : billingPortalUrl;
-          break;
-        case 'premium':
-          window.location.href =
-            userPlan === 'free'
-              ? `${STRIPE_CONFIG.premiumCheckout}?prefilled_email=${encodeURIComponent(user.email)}`
-              : billingPortalUrl;
-          break;
-        default:
-          window.location.href = billingPortalUrl;
-          break;
-      }
-    } else {
-      navigate(PATH_AUTH.login);
+    switch (plan) {
+      case 'basic':
+        window.location.href =
+          userPlan === 'free'
+            ? `${STRIPE_CONFIG.basicCheckout}?prefilled_email=${encodeURIComponent(user.email)}`
+            : billingPortalUrl;
+        break;
+      case 'premium':
+        window.location.href =
+          userPlan === 'free'
+            ? `${STRIPE_CONFIG.premiumCheckout}?prefilled_email=${encodeURIComponent(user.email)}`
+            : billingPortalUrl;
+        break;
+      default:
+        window.location.href = billingPortalUrl;
+        break;
     }
   };
 
@@ -201,9 +197,7 @@ export default function Pricing() {
                 <PricingPlanCard
                   card={card}
                   index={index}
-                  click={() => {
-                    planOnClick(card.subscription);
-                  }}
+                  click={isAuthenticated ? () => planOnClick(card.subscription) : () => navigate(PATH_AUTH.login)}
                 />
               </Grid>
             ))}
